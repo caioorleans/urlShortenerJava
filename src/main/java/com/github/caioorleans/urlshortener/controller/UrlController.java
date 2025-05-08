@@ -5,6 +5,8 @@ import com.github.caioorleans.urlshortener.model.ShortenedUrl;
 import com.github.caioorleans.urlshortener.service.UrlService;
 import com.github.caioorleans.urlshortener.service.impl.UrlServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +33,15 @@ public class UrlController {
     }
 
     @GetMapping("/{url}")
-    public String getShortenedUrl(@PathVariable("url") String url) {
-        return urlService.findUrlByShortUrl(url);
+    public ResponseEntity<?> redirect(@PathVariable("url") String url) {
+        var originalUrl = urlService.findUrlByShortUrl(url);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", originalUrl)
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable("id") Long id) {
+        urlService.deleteUrl(id);
     }
 }
