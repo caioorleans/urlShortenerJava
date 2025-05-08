@@ -1,5 +1,7 @@
 package com.github.caioorleans.urlshortener.service.impl;
 
+import com.github.caioorleans.urlshortener.exception.InternalServerErrorException;
+import com.github.caioorleans.urlshortener.exception.NotFoundException;
 import com.github.caioorleans.urlshortener.model.ShortenedUrl;
 import com.github.caioorleans.urlshortener.repository.UrlRepository;
 import com.github.caioorleans.urlshortener.service.UrlService;
@@ -25,7 +27,7 @@ public class UrlServiceImpl implements UrlService {
         try {
             return urlRepository.save(new ShortenedUrl(url, shortUrl));
         } catch (Exception e) {
-            throw new RuntimeException("Ocorreu um erro ao tentar salvar a URL.");
+            throw new InternalServerErrorException("Ocorreu um erro ao tentar salvar a URL.");
         }
     }
 
@@ -33,7 +35,7 @@ public class UrlServiceImpl implements UrlService {
     public String findUrlByShortUrl(String shortUrl) {
         var shortenedUrl = urlRepository.findByShortenedUrl(shortUrl);
         if (shortenedUrl.isEmpty()) {
-            throw new RuntimeException("Url não encontrada");
+            throw new NotFoundException("URL não encontrada");
         }
         return shortenedUrl.get().getOriginalUrl();
     }
@@ -43,7 +45,7 @@ public class UrlServiceImpl implements UrlService {
         try {
             return urlRepository.findAll();
         } catch (Exception e) {
-            throw new RuntimeException("Ocorreu um erro ao tentar listar URLs.");
+            throw new NotFoundException("Ocorreu um erro ao tentar listar URLs.");
         }
     }
 
@@ -52,7 +54,7 @@ public class UrlServiceImpl implements UrlService {
         try {
             urlRepository.deleteById(id);
         } catch (Exception e) {
-            throw new RuntimeException("Ocorreu um erro ao tentar deletar URL.");
+            throw new NotFoundException("Ocorreu um erro ao tentar deletar URL.");
         }
     }
 }
