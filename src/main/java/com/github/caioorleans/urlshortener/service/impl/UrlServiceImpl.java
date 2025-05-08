@@ -25,7 +25,9 @@ public class UrlServiceImpl implements UrlService {
     public ShortenedUrl saveUrl(String url) {
         var shortUrl = Base62Encoder.generate(6);
         try {
-            return urlRepository.save(new ShortenedUrl(url, shortUrl));
+            var createdUrl = urlRepository.save(new ShortenedUrl(url, shortUrl));
+            createdUrl.setShortenedUrl("localhost:8080/url/"+createdUrl.getShortenedUrl());
+            return createdUrl;
         } catch (Exception e) {
             throw new InternalServerErrorException("Ocorreu um erro ao tentar salvar a URL.");
         }
@@ -43,7 +45,10 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public List<ShortenedUrl> listUrls() {
         try {
-            return urlRepository.findAll();
+            var urls = urlRepository.findAll();
+            urls.forEach(
+                            (url)-> url.setShortenedUrl("localhost:8080/url/" + url.getShortenedUrl()));
+            return urls;
         } catch (Exception e) {
             throw new NotFoundException("Ocorreu um erro ao tentar listar URLs.");
         }
